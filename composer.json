@@ -1,5 +1,5 @@
 {
-    "name": "jianzhi/php-stats-sdk",
+    "name": "cabbagerun/php-stats-sdk",
     "description": "jianzhi stats php sdk",
     "type": "library",
     "license": "MIT",
