@@ -1,0 +1,21 @@
+{
+    "name": "jianzhi/php-stats-sdk",
+    "description": "jianzhi stats php sdk",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "smi2/phpclickhouse": "1.3.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jianzhi\\Stats\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "wenjian",
+            "email": "huangwenjian@jianzhikeji.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
