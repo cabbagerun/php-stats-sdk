@@ -2,6 +2,7 @@
 
 namespace Jianzhi\Stats\service\swoole;
 
+use Jianzhi\Stats\base\Response;
 use Jianzhi\Stats\base\SwooleBase;
 
 class HttpServer extends SwooleBase
@@ -12,8 +13,8 @@ class HttpServer extends SwooleBase
     private $sockType;
 
     public function __construct(
-        $host = '0.0.0.0',
-        $port = 9501,
+        $host = INNER_SWOOLE_HOST,
+        $port = INNER_SWOOLE_PORT,
         $option = [],
         $mode = SWOOLE_PROCESS,
         $sockType = SWOOLE_SOCK_TCP
@@ -121,7 +122,7 @@ class HttpServer extends SwooleBase
         $server      = $request->server;
         $path_info   = $server['path_info'];
         $request_uri = $server['request_uri'];
-        $params      = [];
+        $params      = array_merge(($request->get ?: []), ($request->post ?: []));
 
         if ($path_info == '/favicon.ico' || $request_uri == '/favicon.ico') {
             return $response->end();
@@ -145,12 +146,12 @@ class HttpServer extends SwooleBase
             $controller = ucwords(($path_info[1] ?? $controller));
             $method     = $path_info[2] ?? $method;
         }
-        $result       = $this->returnData(1001, '接口不存在');
+        $result       = Response::returnData(1001, '接口不存在');
         $dispatch     = '\\Jianzhi\\Stats\\Dispatch';
-        $dispatchCall = 'call';
+        $dispatchCall = 'callApi';
         if (class_exists($dispatch) && method_exists($dispatch, $dispatchCall)) {
-            $dispatchOb = new $dispatch();
-            $result     = $dispatchOb->$dispatchCall($controller, $method, $params);
+            $dispatchOb = new $dispatch(['ch_db' => ['host' => '127.0.0.1']]);
+            $result = $dispatchOb->$dispatchCall($controller, $method, $params);
         }
 
         $response->end($result);

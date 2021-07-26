@@ -5,8 +5,8 @@ namespace Jianzhi\Stats\base;
 abstract class SwooleBase extends Base
 {
     private $serv;
-    private $host   = '0.0.0.0';
-    private $port   = 9501;
+    private $host   = INNER_SWOOLE_HOST;
+    private $port   = INNER_SWOOLE_PORT;
     private $option = [
         'daemonize'    => false,
         'log_file'     => __DIR__ . '/../log/error.log',

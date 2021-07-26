@@ -1,4 +1,6 @@
 .idea
 .vscode
+log/*
+!log/error.log
 vendor
 composer.lock

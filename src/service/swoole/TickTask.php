@@ -2,9 +2,9 @@
 
 namespace Jianzhi\Stats\service\swoole;
 
-use Jianzhi\Stats\base\SwooleBase;
+use Jianzhi\Stats\base\Base;
 
-class TickTask
+class TickTask extends Base
 {
     public function run()
     {

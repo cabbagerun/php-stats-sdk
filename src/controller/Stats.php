@@ -3,13 +3,14 @@
 namespace Jianzhi\Stats\controller;
 
 use Jianzhi\Stats\base\ControllerBase;
+use Jianzhi\Stats\base\Response;
 use Jianzhi\Stats\service\ch\Test;
 
 class Stats extends ControllerBase
 {
-    public function select()
+    public function select($params = [])
     {
         $test = new Test();
-        return $this->returnData(1000, 'ok', $test->selectTest());
+        return Response::returnData(1000, 'ok', [$params, $test->selectTest()]);
     }
 }
