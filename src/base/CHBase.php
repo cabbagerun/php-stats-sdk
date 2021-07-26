@@ -15,7 +15,6 @@ class CHBase extends Base
      */
     public static function make($config = [])
     {
-        var_dump(self::$chDbCnf);
         if (self::$db) {
             return self::$db;
         }

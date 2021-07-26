@@ -143,7 +143,7 @@ class HttpServer extends SwooleBase
                 $response->status(404);
                 $response->end('URL不存在');
             }
-            $controller = ucwords(($path_info[1] ?? $controller));
+            $controller = $path_info[1] ?? $controller;
             $method     = $path_info[2] ?? $method;
         }
         $result       = Response::returnData(1001, '接口不存在');

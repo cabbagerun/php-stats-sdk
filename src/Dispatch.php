@@ -26,6 +26,8 @@ class Dispatch
     public function callApi($class, $action, $params = [])
     {
         try {
+            $class = ucwords($class);
+            $action = ucfirst($action);
             $classPath = __DIR__ . '/controller/' . $class . '.php';
             $class     = '\\Jianzhi\\Stats\\controller\\' . $class;
             if (!is_file($classPath) || !method_exists($class, $action)) {
