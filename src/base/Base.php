@@ -9,12 +9,13 @@ class Base
     protected static $swooleHttpCnf  = [];//swooleHttp配置
     protected static $chDbCnf  = [];//clickHouse配置
     protected static $redisCnf = [];//redis配置
-    protected $request = [];
+    protected $request = null;
 
     public function __construct(Request $request)
     {
         $this->request = $request;
         $config = $request->getConfig();
+        var_dump($config);
         if (isset($config['swoole_http']) && is_array($config['swoole_http'])) {
             self::$swooleHttpCnf = $config['swoole_http'];
         }

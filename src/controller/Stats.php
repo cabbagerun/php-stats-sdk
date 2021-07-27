@@ -8,7 +8,8 @@ class Stats extends ControllerBase
 {
     public function select()
     {
-        $params = $this->request->getParams();
+        var_dump($this->request->getConfig());
+        $params = $this->request->param('', 'htmlspecialchars');
         // $validate = new \Jianzhi\Stats\validate\DataStats();
         // if (!$validate->check($params)) {
         //     return api_return(1001, $validate->getError());

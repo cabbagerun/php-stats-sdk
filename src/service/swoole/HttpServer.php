@@ -113,10 +113,9 @@ class HttpServer extends SwooleBase
     {
         $response->header("Server", "SwooleServer");
         $response->header("Content-Type", "text/html; charset=utf-8");
-        is_object($request) && $request = json_decode(json_encode($request), true);
-        $path_info   = $request['server']['path_info'] ?? '';
-        $request_uri = $request['server']['request_uri'] ?? '';
-        $params      = array_merge(($request['get'] ?: []), ($request['post'] ?: []));
+        $server = $request->server ?: [];
+        $path_info   = $server['path_info'] ?? '';
+        $request_uri = $server['request_uri'] ?? '';
 
         $result  = api_return(1001, '接口不存在');
         $favicon = '/favicon.ico';
@@ -136,8 +135,9 @@ class HttpServer extends SwooleBase
         $dispatch = '\\Jianzhi\\Stats\\Dispatch';
         $call     = 'callApi';
         if (class_exists($dispatch) && method_exists($dispatch, $call)) {
-            $dispatchOb = new $dispatch();
-            $result     = $dispatchOb->$call($controller, $method, $params);
+            // todo 此处不设置config配置，示例example/http.php传入即可
+            $dispatchOb = new $dispatch([], $request);
+            $result     = $dispatchOb->$call($controller, $method);
         }
 
         $response->end($result);

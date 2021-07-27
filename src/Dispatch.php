@@ -19,10 +19,9 @@ class Dispatch
      * 访问接口
      * @param $class
      * @param $action
-     * @param array $params
      * @return false|mixed|string
      */
-    public function callApi($class, $action, $params = [])
+    public function callApi($class, $action)
     {
         try {
             $class = ucwords($class);
@@ -32,7 +31,6 @@ class Dispatch
             if (!is_file($classPath) || !method_exists($class, $action)) {
                 return api_return(1001, '接口不存在');
             }
-            $this->request->setParams($params, ['trim', 'htmlspecialchars']);
             $obj = new $class($this->request);
             return $obj->$action();
         } catch (\Throwable $e) {

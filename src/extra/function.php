@@ -1,6 +1,6 @@
 <?php
 
-if (!function_exists('response')) {
+if (!function_exists('api_return')) {
     /**
      * api响应
      * @param int $code
