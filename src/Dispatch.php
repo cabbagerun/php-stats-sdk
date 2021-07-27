@@ -2,10 +2,9 @@
 
 namespace Jianzhi\Stats;
 
-use Jianzhi\Stats\service\Config;
-use Jianzhi\Stats\service\swoole\HttpServer as HServer;
-use Jianzhi\Stats\service\swoole\TickTask as TTask;
-use Jianzhi\Stats\base\Response;
+use Jianzhi\Stats\service\Init;
+use Jianzhi\Stats\service\swoole\HttpServer;
+use Jianzhi\Stats\service\swoole\TickTask;
 
 /**
  * 对外api访问
@@ -14,7 +13,7 @@ use Jianzhi\Stats\base\Response;
  */
 class Dispatch
 {
-    use Config;
+    use Init;
 
     /**
      * 访问接口
@@ -31,34 +30,24 @@ class Dispatch
             $classPath = __DIR__ . '/controller/' . $class . '.php';
             $class     = '\\Jianzhi\\Stats\\controller\\' . $class;
             if (!is_file($classPath) || !method_exists($class, $action)) {
-                return Response::returnData(1001, '接口不存在');
+                return api_return(1001, '接口不存在');
             }
-            $obj = new $class($this->getConfig());
-            return $obj->$action($params);
+            $this->request->setParams($params, ['trim', 'htmlspecialchars']);
+            $obj = new $class($this->request);
+            return $obj->$action();
         } catch (\Throwable $e) {
-            return Response::returnData(1001, '接口异常' . $e->getMessage());
+            return api_return(1001, '接口异常' . $e->getMessage());
         }
     }
 
     /**
      * 开启http服务
-     * @param string $host
-     * @param int $port
-     * @param array $option
-     * @param int $mode
-     * @param int $sockType
      * @throws \Exception
      */
-    public function startHttpServer(
-        $host = INNER_SWOOLE_HOST,
-        $port = INNER_SWOOLE_PORT,
-        $option = [],
-        $mode = SWOOLE_PROCESS,
-        $sockType = SWOOLE_SOCK_TCP
-    ) {
+    public function startHttpServer() {
         try {
-            $http = new HServer($host, $port, $option, $mode, $sockType);
-            $http->run();
+            $http = new HttpServer($this->request);
+            $http->initSet()->run();
         } catch (\Throwable $e) {
             throw new \Exception($e->getMessage());
         }
@@ -71,8 +60,8 @@ class Dispatch
     public function startTickTask()
     {
         try {
-            $http = new TTask($this->getConfig());
-            $http->run();
+            $task = new TickTask($this->request);
+            $task->run();
         } catch (\Throwable $e) {
             throw new \Exception($e->getMessage());
         }

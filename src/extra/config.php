@@ -1,7 +1,15 @@
 <?php
-//swoole内部服务默认配置
+!defined('SDK_IS_RUN') && define('SDK_IS_RUN', true);
+
+// swoole内部服务默认配置
 !defined('INNER_SWOOLE_HOST') && define('INNER_SWOOLE_HOST', '0.0.0.0');
 !defined('INNER_SWOOLE_PORT') && define('INNER_SWOOLE_PORT', 9501);
+!defined('INNER_SWOOLE_OPTION') && define('INNER_SWOOLE_OPTION', [
+    'daemonize'    => false,
+    'log_file'     => __DIR__ . '/../log/error.log',
+    'log_level'    => SWOOLE_LOG_NOTICE | SWOOLE_LOG_WARNING | SWOOLE_LOG_ERROR,
+    'log_rotation' => SWOOLE_LOG_ROTATION_DAILY,
+]);
 
 // clickHouse默认配置
 !defined('CLICKHOUSE_HOST') && define('CLICKHOUSE_HOST', '127.0.0.1');

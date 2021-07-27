@@ -2,42 +2,36 @@
 
 namespace Jianzhi\Stats\service\swoole;
 
-use Jianzhi\Stats\base\Response;
 use Jianzhi\Stats\base\SwooleBase;
 
 class HttpServer extends SwooleBase
 {
-    private $host;
-    private $port;
-    private $mode;
-    private $sockType;
-
-    public function __construct(
-        $host = INNER_SWOOLE_HOST,
-        $port = INNER_SWOOLE_PORT,
-        $option = [],
-        $mode = SWOOLE_PROCESS,
-        $sockType = SWOOLE_SOCK_TCP
-    ) {
-        $this->host     = $host;
-        $this->port     = $port;
-        $this->mode     = $mode;
-        $this->sockType = $sockType;
-        $option         = array_merge(
+    /**
+     * 初始化设置 -- 重写方法
+     * @param array $config
+     * @return SwooleBase
+     */
+    public function initSet(array $config = [])
+    {
+        $config = array_merge(
+            $config,
             [
-                'worker_num'            => swoole_cpu_num(),
-                'reactor_num'           => swoole_cpu_num(),
-                'max_request'           => 4,//每个worker进程数的最大请求数
-                'document_root'         => '/',//配置静态文件根目录
-                'enable_static_handler' => false,//开启静态文件请求处理功能true|false
-                'daemonize'             => false,//是否开启守护进程true|false
-                'package_max_length'    => 20 * 1024 * 1024,
-                'buffer_output_size'    => 10 * 1024 * 1024,
-                'socket_buffer_size'    => 128 * 1024 * 1024,
-            ],
-            $option
+                'host'   => INNER_SWOOLE_HOST,
+                'port'   => INNER_SWOOLE_PORT,
+                'option' => [
+                    'worker_num'            => swoole_cpu_num(),
+                    'reactor_num'           => swoole_cpu_num(),
+                    'max_request'           => 4,//每个worker进程数的最大请求数
+                    'document_root'         => '/',//配置静态文件根目录
+                    'enable_static_handler' => false,//开启静态文件请求处理功能true|false
+                    'daemonize'             => false,//是否开启守护进程true|false
+                    'package_max_length'    => 20 * 1024 * 1024,
+                    'buffer_output_size'    => 10 * 1024 * 1024,
+                    'socket_buffer_size'    => 128 * 1024 * 1024,
+                ],
+            ]
         );
-        parent::__construct($this->host, $this->port, $option);
+        return parent::initSet($config);
     }
 
     /**
@@ -46,9 +40,9 @@ class HttpServer extends SwooleBase
      * @param int $port
      * @return mixed|\swoole_http_server
      */
-    public function instance($host, $port)
+    public function instance(string $host, int $port)
     {
-        return new \swoole_http_server($host, $port, $this->mode, $this->sockType);
+        return new \swoole_http_server($host, $port, SWOOLE_PROCESS, SWOOLE_SOCK_TCP);
     }
 
     /**
@@ -71,7 +65,7 @@ class HttpServer extends SwooleBase
     public function onStart($serv)
     {
         echo "#### onStart ####" . PHP_EOL;
-        swoole_set_process_name('swoole_process_server_master');
+        swoole_set_process_name('swoole_http_server_process');
 
         echo "SWOOLE " . SWOOLE_VERSION . " 服务已启动" . PHP_EOL;
         echo "master_pid: {$serv->master_pid}" . PHP_EOL;
@@ -103,7 +97,7 @@ class HttpServer extends SwooleBase
             function ($className) {
                 $classPath = __DIR__ . '/../../Dispatch.php';
                 if (is_file($classPath)) {
-                    require "{$classPath}";
+                    require_once "{$classPath}";
                     return;
                 }
             }
@@ -119,39 +113,31 @@ class HttpServer extends SwooleBase
     {
         $response->header("Server", "SwooleServer");
         $response->header("Content-Type", "text/html; charset=utf-8");
-        $server      = $request->server;
-        $path_info   = $server['path_info'];
-        $request_uri = $server['request_uri'];
-        $params      = array_merge(($request->get ?: []), ($request->post ?: []));
+        is_object($request) && $request = json_decode(json_encode($request), true);
+        $path_info   = $request['server']['path_info'] ?? '';
+        $request_uri = $request['server']['request_uri'] ?? '';
+        $params      = array_merge(($request['get'] ?: []), ($request['post'] ?: []));
 
-        if ($path_info == '/favicon.ico' || $request_uri == '/favicon.ico') {
-            return $response->end();
+        $result  = api_return(1001, '接口不存在');
+        $favicon = '/favicon.ico';
+        if ($path_info == $favicon || $request_uri == $favicon) {
+            return $response->end($result);
         }
         $controller = 'Index';
         $method     = 'home';
         if ($path_info != '/') {
             $path_info = explode('/', $path_info);
-            if (!is_array($path_info)) {
-                $response->status(404);
-                $response->end('URL不存在');
-            }
-            if ($path_info[1] == 'favicon.ico') {
-                return;
-            }
-            $count_path_info = count($path_info);
-            if ($count_path_info > 4) {
-                $response->status(404);
-                $response->end('URL不存在');
+            if (!is_array($path_info) || $path_info[1] == $favicon || count($path_info) > 4) {
+                $response->end($result);
             }
             $controller = $path_info[1] ?? $controller;
             $method     = $path_info[2] ?? $method;
         }
-        $result       = Response::returnData(1001, '接口不存在');
-        $dispatch     = '\\Jianzhi\\Stats\\Dispatch';
-        $dispatchCall = 'callApi';
-        if (class_exists($dispatch) && method_exists($dispatch, $dispatchCall)) {
-            $dispatchOb = new $dispatch(['ch_db' => ['host' => '127.0.0.1']]);
-            $result = $dispatchOb->$dispatchCall($controller, $method, $params);
+        $dispatch = '\\Jianzhi\\Stats\\Dispatch';
+        $call     = 'callApi';
+        if (class_exists($dispatch) && method_exists($dispatch, $call)) {
+            $dispatchOb = new $dispatch();
+            $result     = $dispatchOb->$call($controller, $method, $params);
         }
 
         $response->end($result);

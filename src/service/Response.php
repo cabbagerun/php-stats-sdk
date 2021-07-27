@@ -1,10 +1,10 @@
 <?php
 
-namespace Jianzhi\Stats\base;
+namespace Jianzhi\Stats\service;
 
 class Response
 {
-    public static function returnData($code = 1000, $msg = 'ok', $data = null)
+    public static function apiReturn(int $code = 1000, string $msg = 'ok', $data = null)
     {
         $result = [
             'code'      => $code,

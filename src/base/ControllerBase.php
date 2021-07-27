@@ -6,7 +6,7 @@ class ControllerBase extends Base
 {
     public function __call($name, $arguments)
     {
-        return Response::returnData(1001, '接口不存在');
+        return api_return(1001, '接口不存在');
     }
 
     //todo 用于公共验证

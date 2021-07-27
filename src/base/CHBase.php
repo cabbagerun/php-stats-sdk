@@ -13,16 +13,16 @@ class CHBase extends Base
      * @param array $config
      * @return Client
      */
-    public static function make($config = [])
+    public static function connect(array $config = [])
     {
         if (self::$db) {
             return self::$db;
         }
         $config   = [
-            'host'     => $config['host'] ?? (self::$chDbCnf['host'] ?? CLICKHOUSE_HOST),
-            'port'     => $config['port'] ?? (self::$chDbCnf['port'] ?? CLICKHOUSE_PORT),
-            'username' => $config['username'] ?? (self::$chDbCnf['username'] ?? CLICKHOUSE_USERNAME),
-            'password' => $config['password'] ?? (self::$chDbCnf['password'] ?? CLICKHOUSE_PASSWORD),
+            'host'     => self::$chDbCnf['host'] ?? ($config['host'] ?? CLICKHOUSE_HOST),
+            'port'     => self::$chDbCnf['port'] ?? ($config['port'] ?? CLICKHOUSE_PORT),
+            'username' => self::$chDbCnf['username'] ?? ($config['username'] ?? CLICKHOUSE_USERNAME),
+            'password' => self::$chDbCnf['password'] ?? ($config['password'] ?? CLICKHOUSE_PASSWORD),
         ];
         $dbName   = $config['db'] ?? CLICKHOUSE_DB;
         self::$db = new Client($config);

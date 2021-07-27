@@ -7,34 +7,25 @@ abstract class SwooleBase extends Base
     private $serv;
     private $host   = INNER_SWOOLE_HOST;
     private $port   = INNER_SWOOLE_PORT;
-    private $option = [
-        'daemonize'    => false,
-        'log_file'     => __DIR__ . '/../log/error.log',
-        'log_level'    => SWOOLE_LOG_NOTICE | SWOOLE_LOG_WARNING | SWOOLE_LOG_ERROR,
-        'log_rotation' => SWOOLE_LOG_ROTATION_DAILY,
-    ];
+    private $option = INNER_SWOOLE_OPTION;
 
     /**
-     * 初始化
-     * SwooleBase constructor.
-     * @param string $host
-     * @param int $port
-     * @param array $option
+     * 初始化设置
+     * todo 如有配置需覆盖可重写覆盖$config参数
+     * @param array $config
+     * @return $this
      */
-    public function __construct($host, $port, $option)
+    public function initSet(array $config = [])
     {
-        if ($host) {
-            $this->host = $host;
-        }
-        if ($port) {
-            $this->port = $port;
-        }
-        if ($option) {
-            $this->option = array_merge($this->option, $option);
-        }
-        $this->serv = $this->instance($this->host, $this->port);
+        $this->host   = self::$swooleHttpCnf['host'] ?? ($config['host'] ?? $this->host);
+        $this->port   = self::$swooleHttpCnf['port'] ?? ($config['port'] ?? $this->port);
+        $this->option = array_merge(
+            $this->option,
+            array_merge(($config['option'] ?? []), (self::$swooleHttpCnf['option'] ?? []))
+        );
+        $this->serv   = $this->instance($this->host, $this->port);
         $this->serv->set($this->option);
-        parent::__construct();
+        return $this;
     }
 
     /**
@@ -43,7 +34,7 @@ abstract class SwooleBase extends Base
      * @param int $port
      * @return mixed
      */
-    abstract public function instance($host, $port);
+    abstract public function instance(string $host, int $port);
 
 
     /**

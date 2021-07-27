@@ -2,17 +2,14 @@
 
 namespace Jianzhi\Stats\model;
 
-class TestModel extends Model
+class DataStatsModel extends Model
 {
-    //表名
-    protected $table = 'jz_test';
-
     /**
      * @return array
      */
     public function selectTest1()
     {
-        $result = self::make()->select('SELECT 1')->rows();
+        $result = self::connect()->select('SELECT * FROM jz_test WHERE user_id = :user_id', ['user_id' => '1'])->rows();
         return $result;
     }
 
@@ -21,7 +18,7 @@ class TestModel extends Model
      */
     public function selectTest2()
     {
-        $result = self::make()->select('SELECT 1')->rows();
+        $result = self::connect()->select('SELECT 1')->rows();
         return $result;
     }
 }
