@@ -135,8 +135,7 @@ class HttpServer extends SwooleBase
         $dispatch = '\\Jianzhi\\Stats\\Dispatch';
         $call     = 'callApi';
         if (class_exists($dispatch) && method_exists($dispatch, $call)) {
-            // todo 此处不设置config配置，示例example/http.php传入即可
-            $dispatchOb = new $dispatch([], $request);
+            $dispatchOb = new $dispatch($this->config, $request);
             $result     = $dispatchOb->$call($controller, $method);
         }
 
