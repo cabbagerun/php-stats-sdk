@@ -3,16 +3,12 @@
 namespace Jianzhi\Stats\service\swoole;
 
 use Jianzhi\Stats\base\Base;
+use Jianzhi\Stats\service\swoole\task\Task;
 
 class TickTask extends Base
 {
     public function run()
     {
-        swoole_timer_tick(
-            1000,
-            function () {
-                var_dump(time());
-            }
-        );
+        (new Task())->tick();
     }
 }

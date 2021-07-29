@@ -8,16 +8,19 @@
 ## 结构
 
 ``` bash
-├── base            基础目录
-├── controller      控制器目录
-├── extra           扩展目录
-├── log             日志木目录，暂用于搜集swoole http服务日志
-├── model           对应数据表的模型目录
-├── service         service服务，一般用于处理业务逻辑或服务封装
-    ├── ch          clickHouse业务目录
-    ├── redis       redis服务
-    ├── swoole      swoole服务
-├── validate        验证目录
+├── base                基础目录
+├── controller          控制器目录
+├── extra               扩展目录
+├── log                 日志木目录，暂用于搜集swoole http服务日志
+├── model               对应数据表的模型目录
+├── service             service服务，一般用于处理业务逻辑或服务封装
+    ├── logic           业务逻辑目录
+    ├── redis           redis服务目录
+    ├── swoole          swoole服务目录
+    ├── Init.php        Api初始化服务
+    ├── Request.php     Request服务
+    ├── Response.php    Response服务
+├── validate            验证目录
 ```
 
 ## 测试

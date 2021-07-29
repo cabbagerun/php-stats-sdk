@@ -1,6 +1,6 @@
 <?php
 
-namespace Jianzhi\Stats\service\ch;
+namespace Jianzhi\Stats\service\logic;
 
 use Jianzhi\Stats\base\Base;
 use Jianzhi\Stats\model\DataStatsModel;

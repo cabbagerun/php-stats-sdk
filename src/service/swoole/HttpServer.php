@@ -112,7 +112,7 @@ class HttpServer extends SwooleBase
     public function onRequest($request, $response)
     {
         $response->header("Server", "SwooleServer");
-        $response->header("Content-Type", "text/html; charset=utf-8");
+        $response->header("Content-Type", "application/json; charset=utf-8");
         $server = $request->server ?: [];
         $path_info   = $server['path_info'] ?? '';
         $request_uri = $server['request_uri'] ?? '';
@@ -135,7 +135,7 @@ class HttpServer extends SwooleBase
         $dispatch = '\\Jianzhi\\Stats\\Dispatch';
         $call     = 'callApi';
         if (class_exists($dispatch) && method_exists($dispatch, $call)) {
-            $dispatchOb = new $dispatch($this->config, $request);
+            $dispatchOb = new $dispatch(self::$config, $request);
             $result     = $dispatchOb->$call($controller, $method);
         }
 

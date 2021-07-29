@@ -61,20 +61,18 @@ class Request
         }
         if (class_exists('\\Swoole\\Http\\Request') && $remoteRequest instanceof \Swoole\Http\Request) {
             is_object($remoteRequest) && $remoteRequest = json_decode(json_encode($remoteRequest), true);
-            $this->header  = array_change_key_case(($remoteRequest['header'] ?? []), CASE_UPPER);
-            $this->server  = array_change_key_case(($remoteRequest['server'] ?? []), CASE_UPPER);
-            $this->session = $_SESSION ?? [];
-            $this->cookie  = $remoteRequest['cookie'] ?? [];
-            $this->get     = $remoteRequest['get'] ?? [];
-            $this->post    = $remoteRequest['post'] ?? [];
-            $this->put     = $remoteRequest['put'] ?? [];
+            $this->header = array_change_key_case(($remoteRequest['header'] ?? []), CASE_UPPER);
+            $this->server = array_change_key_case(($remoteRequest['server'] ?? []), CASE_UPPER);
+            $this->cookie = $remoteRequest['cookie'] ?? [];
+            $this->get    = $remoteRequest['get'] ?? [];
+            $this->post   = $remoteRequest['post'] ?? [];
+            $this->put    = $remoteRequest['put'] ?? [];
         } elseif (class_exists('\\think\\Request') && $remoteRequest instanceof \think\Request) {
-            $this->header  = $remoteRequest->header();
-            $this->server  = $remoteRequest->server();
-            $this->session = $remoteRequest->session();
-            $this->cookie  = $remoteRequest->cookie();
-            $this->get     = $remoteRequest->get();
-            $this->post    = $remoteRequest->post();
+            $this->header = $remoteRequest->header();
+            $this->server = $remoteRequest->server();
+            $this->cookie = $remoteRequest->cookie();
+            $this->get    = $remoteRequest->get();
+            $this->post   = $remoteRequest->post();
             $this->put    = $remoteRequest->put();
         }
     }
@@ -182,12 +180,6 @@ class Request
      * @var array
      */
     protected $put;
-
-    /**
-     * SESSION对象
-     * @var array
-     */
-    protected $session;
 
     /**
      * COOKIE数据
@@ -592,21 +584,6 @@ class Request
         }
 
         return $this->input($this->request, $name, $default, $filter);
-    }
-
-    /**
-     * 获取session数据
-     * @access public
-     * @param string $name 数据名称
-     * @param string $default 默认值
-     * @return mixed
-     */
-    public function session(string $name = '', $default = null)
-    {
-        if ('' === $name) {
-            return $this->session;
-        }
-        return $this->session[$name] ?? $default;
     }
 
     /**

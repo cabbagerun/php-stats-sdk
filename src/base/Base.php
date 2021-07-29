@@ -6,24 +6,26 @@ use \Jianzhi\Stats\service\Request;
 
 class Base
 {
+    protected static $request       = null;
+    protected static $config        = [];
     protected static $swooleHttpCnf = [];//swooleHttp配置
     protected static $chDbCnf       = [];//clickHouse配置
     protected static $redisCnf      = [];//redis配置
-    protected        $request       = null;
-    protected        $config        = [];
 
-    public function __construct(Request $request)
+    public function __construct(Request $request = null)
     {
-        $this->request = $request;
-        $this->config  = $request->getConfig();
-        if (isset($this->config['swoole_http']) && is_array($this->config['swoole_http'])) {
-            self::$swooleHttpCnf = $this->config['swoole_http'];
-        }
-        if (isset($this->config['ch_db']) && is_array($this->config['ch_db'])) {
-            self::$chDbCnf = $this->config['ch_db'];
-        }
-        if (isset($this->config['redis']) && is_array($this->config['redis'])) {
-            self::$redisCnf = $this->config['redis'];
+        if ($request) {
+            self::$request = $request;
+            self::$config  = $request->getConfig();
+            if (isset(self::$config['swoole_http']) && is_array(self::$config['swoole_http'])) {
+                self::$swooleHttpCnf = self::$config['swoole_http'];
+            }
+            if (isset(self::$config['ch_db']) && is_array(self::$config['ch_db'])) {
+                self::$chDbCnf = self::$config['ch_db'];
+            }
+            if (isset(self::$config['redis']) && is_array(self::$config['redis'])) {
+                self::$redisCnf = self::$config['redis'];
+            }
         }
     }
 }

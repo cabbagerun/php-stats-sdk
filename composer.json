@@ -4,12 +4,14 @@
     "type": "library",
     "license": "MIT",
     "require": {
+        "friendsofdoctrine/dbal-clickhouse": "1.5.3",
         "smi2/phpclickhouse": "1.3.10",
         "topthink/think-validate": "2.0.2"
     },
     "autoload": {
         "psr-4": {
-            "Jianzhi\\Stats\\": "src/"
+            "Jianzhi\\Stats\\": "src/",
+            "Jianzhi\\": "vendor/php-stats-sdk-require"
         }
     },
     "authors": [

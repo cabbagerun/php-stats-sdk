@@ -3,19 +3,24 @@
 namespace Jianzhi\Stats\controller;
 
 use Jianzhi\Stats\base\ControllerBase;
-use Jianzhi\Stats\service\redis\MyRedis;
+use Jianzhi\Stats\service\MyRedis;
 
 class Data extends ControllerBase
 {
     public function putData()
     {
-        $params = $this->getParams();
-        //todo 处理数据
-        //todo redis缓冲
-        $redisKey = MyRedis::instance(RK_WAIT_STATS_DATA_BUFF);
-        MyRedis::instance()->set('aaaaa', 1111);
-        $res2 = MyRedis::instance()->get('aaaaa');
-        MyRedis::instance()->del('aaaaa');
-        return api_return(1000, 'ok', [$params, $res2, MyRedis::getCacheKey('aaaaaaaaa', 1,2,3)]);
+        $params = self::$request->param('', []);
+        //验证
+        $validate = new \Jianzhi\Stats\validate\DataStats();
+        if (!$validate->check($params)) {
+            return api_return(1001, $validate->getError());
+        }
+        //缓冲
+        $redisKey = MyRedis::getCacheKey(RK_WAIT_STATS_DATA_BUFF);
+        $res = MyRedis::instance()->lPush($redisKey, json_encode($params, JSON_UNESCAPED_UNICODE));
+        if (!$res) {
+            return api_return(1001, '记录失败');
+        }
+        return api_return(1000, 'ok');
     }
 }

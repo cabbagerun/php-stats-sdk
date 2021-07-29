@@ -59,7 +59,7 @@ class RedisBase extends Base
      * 获取实例化
      * @param array $config
      * @param array $attr
-     * @return mixed
+     * @return RedisBase
      */
     public static function instance(array $config = [], array $attr = [])
     {
