@@ -7,7 +7,7 @@ use Jianzhi\Stats\Dispatch;
 try {
     $config = ['swoole_http' => [], 'ch_db' => [], 'redis' => []];
     $tick = new Dispatch($config);
-    $tick->startTickTask();
+    $tick->startTaskServer();
 } catch (\Throwable $e) {
     var_dump($e->getMessage());
 }

@@ -8,7 +8,8 @@ use Doctrine\DBAL\Configuration;
 
 class CHBase extends Base
 {
-    private $connection;
+    private   $connection;
+    protected $table;
 
     /**
      * 创建实例
@@ -23,7 +24,7 @@ class CHBase extends Base
         }
 
         /* "friendsofdoctrine/dbal-clickhouse"连接方式 */
-        $connectParams = [
+        $connectParams    = [
             'host'          => self::$chDbCnf['host'] ?? ($config['host'] ?? CLICKHOUSE_HOST),
             'port'          => self::$chDbCnf['port'] ?? ($config['port'] ?? CLICKHOUSE_PORT),
             'user'          => self::$chDbCnf['username'] ?? ($config['username'] ?? CLICKHOUSE_USERNAME),
@@ -57,13 +58,13 @@ class CHBase extends Base
     }
 
     /**
-     * 构建与君
+     * 构建sql语句
      * @param array $config
      * @return \Doctrine\DBAL\Query\QueryBuilder
      * @throws \Doctrine\DBAL\Exception
      */
     public function builder(array $config = [])
     {
-        return $this->connect($config)->createQueryBuilder();
+        return $this->connect($config)->createQueryBuilder()->from($this->table());
     }
 }

@@ -9,5 +9,5 @@ class ControllerBase extends Base
         return api_return(1001, '接口不存在');
     }
 
-    //todo 用于公共验证
+    //todo 签名验证 -- 性能考虑，简单的AES或JWT
 }

@@ -3,12 +3,12 @@
 namespace Jianzhi\Stats\service\swoole;
 
 use Jianzhi\Stats\base\Base;
-use Jianzhi\Stats\service\swoole\task\Task;
+use Jianzhi\Stats\service\swoole\task\AddStatsData;
 
-class TickTask extends Base
+class TaskServer extends Base
 {
     public function run()
     {
-        (new Task())->tick();
+        (new AddStatsData())->run();
     }
 }

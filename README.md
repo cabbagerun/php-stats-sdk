@@ -15,12 +15,12 @@
 ├── model               对应数据表的模型目录
 ├── service             service服务，一般用于处理业务逻辑或服务封装
     ├── logic           业务逻辑目录
-    ├── redis           redis服务目录
     ├── swoole          swoole服务目录
     ├── Init.php        Api初始化服务
+    ├── MyRedis.php     redis服务目录
     ├── Request.php     Request服务
     ├── Response.php    Response服务
-├── validate            验证目录
+├── validate            自动验证目录
 ```
 
 ## 测试
@@ -40,9 +40,5 @@ php example\task.php
 ```
 
 ## 安装
-
-- composer.jianzhikeji.com 绑定host到服务器
-
-- composer config repo.jianzhi composer http://composer.jianzhikeji.com   
 
 - composer require jianzhi/php-stats-sdk

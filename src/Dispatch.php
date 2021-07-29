@@ -4,7 +4,7 @@ namespace Jianzhi\Stats;
 
 use Jianzhi\Stats\service\Init;
 use Jianzhi\Stats\service\swoole\HttpServer;
-use Jianzhi\Stats\service\swoole\TickTask;
+use Jianzhi\Stats\service\swoole\TaskServer;
 
 /**
  * 对外api访问
@@ -55,10 +55,10 @@ class Dispatch
      * 开启定时任务
      * @throws \Exception
      */
-    public function startTickTask()
+    public function startTaskServer()
     {
         try {
-            $task = new TickTask($this->request);
+            $task = new TaskServer($this->request);
             $task->run();
         } catch (\Throwable $e) {
             throw new \Exception($e->getMessage());
