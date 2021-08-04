@@ -2,7 +2,7 @@
 
 namespace Jianzhi\Stats\model;
 
-class DataStatsModel extends Model
+class MDataStats extends Model
 {
     protected $table = 'jz_data_stats';
 
@@ -15,8 +15,10 @@ class DataStatsModel extends Model
     {
         $result = $this->builder()
             ->select('*')
-            ->where('user_id = :user_id')
-            ->setParameters(['user_id' => $userId])
+            ->where('user_id > :user_id')
+            ->setParameters([':user_id' => $userId])
+            ->setFirstResult(0)
+            ->setMaxResults(2)
             ->execute()
             ->fetchAll();
         return $result;
@@ -29,19 +31,24 @@ class DataStatsModel extends Model
      */
     public function selectTest2($userId)
     {
-        $result = $this->connect()->query('SELECT 1')->fetchAll();
+        $condition = ['where' => 'user_id > :user_id', 'bind' => [':user_id' => $userId]];
+        $result    = $this->chunk(100, function ($data) {
+            foreach ($data as &$value) {
+                $value['union_id'] .= '1';
+            }
+            return $data;
+        }, 'user_id,union_id', $condition, ['user_id' => 'desc', 'union_id' => 'desc'], 201);
         return $result;
     }
 
     /**
      * @param array $data
-     * @param array $types
      * @return bool
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws \Doctrine\DBAL\Exception
      */
-    public function putData(array $data, array $types = [])
+    public function putDataToDb(array $data)
     {
-        return $this->insertAll($this->table, $data);
+        return $this->insertAll($data);
     }
 }

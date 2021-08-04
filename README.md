@@ -1,26 +1,61 @@
 # Jianzhi php-stats-sdk
 
 - php: ^7.1
-- ext-swoole: ^4.4
+- ext-swoole: ^4.x
 - ext-curl: *
 - ext-json: *
 
 ## 结构
 
 ``` bash
-├── base                基础目录
-├── controller          控制器目录
-├── extra               扩展目录
-├── log                 日志木目录，暂用于搜集swoole http服务日志
-├── model               对应数据表的模型目录
-├── service             service服务，一般用于处理业务逻辑或服务封装
-    ├── logic           业务逻辑目录
-    ├── swoole          swoole服务目录
-    ├── Init.php        Api初始化服务
-    ├── MyRedis.php     redis服务目录
-    ├── Request.php     Request服务
-    ├── Response.php    Response服务
-├── validate            自动验证目录
+├── base                    基础
+├── command                 命令行
+├── common                  公共的自定义
+├── controller              控制器
+├── extend                  扩展
+    ├── Cacheable.php       cache服务
+    ├── Init.php            Api初始化服务
+    ├── Log.php             日志
+    ├── MyRedis.php         redis服务
+    ├── Request.php         请求服务
+    ├── Response.php        响应服务
+    ├── SdkException.php    sdk异常处理
+├── model                   模型
+├── runtime                 运行时日志
+├── service                 业务逻辑
+├── validate                自动验证目录
+├── Dispatch.php            入口
+```
+
+## 配置
+
+``` bash
+$config = [
+    // 调试模式
+    'sdk_debug' => false,
+    // 日志目录
+    'sdk_log_dir' => __DIR__ . '/../runtime',
+    // swooleHttp服务
+    'swoole_http' => [
+        'host' => '127.0.0.1',
+        'port' => 9501,
+        'option' => [],
+    ],
+    // clickHouse服务
+    'ch_db' => [
+       'host' => '127.0.0.1',
+       'port' => 9501,
+       'username' => 'default',
+       'password' => '',
+       'db' => 'default',
+   ],
+    // redis服务
+    'redis' => [
+       'host' => '127.0.0.1',
+       'port' => 6379,
+       'password' => '',
+   ],
+];
 ```
 
 ## 测试

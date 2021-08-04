@@ -1,12 +1,16 @@
 <?php
-!defined('SDK_IS_RUN') && define('SDK_IS_RUN', true);
+// debug模式
+!defined('SDK_DEBUG') && define('SDK_DEBUG', true);
+
+// 日志保存目录
+!defined('SDK_LOG_DIR') && define('SDK_LOG_DIR', __DIR__ . '/../runtime');
 
 // swoole内部服务默认配置
 !defined('INNER_SWOOLE_HOST') && define('INNER_SWOOLE_HOST', '0.0.0.0');
 !defined('INNER_SWOOLE_PORT') && define('INNER_SWOOLE_PORT', 9501);
 !defined('INNER_SWOOLE_OPTION') && define('INNER_SWOOLE_OPTION', [
     'daemonize'    => false,
-    'log_file'     => __DIR__ . '/../log/error.log',
+    'log_file'     => SDK_LOG_DIR . '/swoole/error.log',
     'log_level'    => SWOOLE_LOG_NOTICE | SWOOLE_LOG_WARNING | SWOOLE_LOG_ERROR,
     'log_rotation' => SWOOLE_LOG_ROTATION_DAILY,
 ]);

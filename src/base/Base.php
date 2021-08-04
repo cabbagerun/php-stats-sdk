@@ -2,15 +2,15 @@
 
 namespace Jianzhi\Stats\base;
 
-use \Jianzhi\Stats\service\Request;
+use \Jianzhi\Stats\extend\Request;
 
 class Base
 {
-    protected static $request       = null;
-    protected static $config        = [];
-    protected static $swooleHttpCnf = [];//swooleHttp配置
-    protected static $chDbCnf       = [];//clickHouse配置
-    protected static $redisCnf      = [];//redis配置
+    private static $request       = null;
+    private static $config        = [];
+    private static $swooleHttpCnf = [];//swooleHttp配置
+    private static $chDbCnf       = [];//clickHouse配置
+    private static $redisCnf      = [];//redis配置
 
     public function __construct(Request $request = null)
     {
@@ -27,5 +27,30 @@ class Base
                 self::$redisCnf = self::$config['redis'];
             }
         }
+    }
+
+    public function request()
+    {
+        return self::$request;
+    }
+
+    public function config()
+    {
+        return self::$config;
+    }
+
+    public function swooleHttpConfig()
+    {
+        return self::$swooleHttpCnf;
+    }
+
+    public function chDbConfig()
+    {
+        return self::$chDbCnf;
+    }
+
+    public function redisConfig()
+    {
+        return self::$redisCnf;
     }
 }

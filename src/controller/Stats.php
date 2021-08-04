@@ -3,19 +3,28 @@
 namespace Jianzhi\Stats\controller;
 
 use Jianzhi\Stats\base\ControllerBase;
-use Jianzhi\Stats\service\logic\DataStats;
+use Jianzhi\Stats\extend\MyRedis;
+use Jianzhi\Stats\validate\VDataStats;
+use Jianzhi\Stats\service\SDataStats;
+use Jianzhi\Stats\extend\Cacheable;
 
 class Stats extends ControllerBase
 {
+    /**
+     * @return false|string
+     */
     public function select()
     {
-        $userId = self::$request->get('user_id', []);
-        $validate = new \Jianzhi\Stats\validate\DataStats();
-        $validate->scene('select');
-        if (!$validate->check(self::$request->param('', []))) {
-            return api_return(1001, (string)$validate->getError());
-        }
-        $data = (new DataStats())->selectTest($userId);
-        return api_return(1000, 'ok', $data);
+        $cacheKey = MyRedis::getCacheKey($this->request()->controller(), $this->request()->action());
+        $data = (new Cacheable())->getCache($cacheKey, function () {
+            $userId = $this->request()->get('user_id', []);
+            $validate = new VDataStats();
+            $validate->scene('select');
+            if (!$validate->check($this->request()->param('', []))) {
+                return json_return(CODE_FAIL, (string)$validate->getError());
+            }
+            return (new SDataStats())->selectTest($userId);
+        });
+        return json_return(CODE_SUC, MSG_SUC, [$data, $this->request()->server('HTTP_ORIGIN')]);
     }
 }

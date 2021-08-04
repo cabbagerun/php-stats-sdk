@@ -10,8 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Jianzhi\\Stats\\": "src/",
-            "Jianzhi\\": "vendor/php-stats-sdk-require"
+            "Jianzhi\\Stats\\": "src/"
         }
     },
     "authors": [

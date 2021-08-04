@@ -37,9 +37,10 @@ class RedisBase extends Base
         if (extension_loaded('redis')) {
             $this->attr       = array_merge($this->attr, $attr);
             $this->expireTime = time() + $this->attr['timeout'];
-            self::$host       = self::$redisCnf['host'] ?? ($config['host'] ?? '127.0.0.1');
-            self::$port       = self::$redisCnf['port'] ?? ($config['port'] ?? 6379);
-            self::$password   = self::$redisCnf['password'] ?? ($config['password'] ?? '');
+            $redisCnf = $this->redisConfig();
+            self::$host       = $config['host'] ?? ($redisCnf['host'] ?? '127.0.0.1');
+            self::$port       = $config['port'] ?? ($redisCnf['port'] ?? 6379);
+            self::$password   = $config['password'] ?? ($redisCnf['password'] ?? '');
             $this->redis      = new \Redis();
             if (isset($this->attr['persistent']) && $this->attr['persistent']) {
                 $persistentId = 'persistent_id_' . ($this->attr['select'] ?? REDIS_SELECT);

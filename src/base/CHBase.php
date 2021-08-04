@@ -8,8 +8,8 @@ use Doctrine\DBAL\Configuration;
 
 class CHBase extends Base
 {
-    private   $connection;
-    protected $table;
+    private static $connection;
+    protected      $table;
 
     /**
      * 创建实例
@@ -19,16 +19,18 @@ class CHBase extends Base
      */
     public function connect(array $config = [])
     {
-        if ($this->connection) {
-            return $this->connection;
+        $name = md5(serialize($config));
+        if (isset(self::$connection[$name])) {
+            return self::$connection[$name];
         }
 
+        $chDbCnf = $this->chDbConfig();
         /* "friendsofdoctrine/dbal-clickhouse"连接方式 */
-        $connectParams    = [
-            'host'          => self::$chDbCnf['host'] ?? ($config['host'] ?? CLICKHOUSE_HOST),
-            'port'          => self::$chDbCnf['port'] ?? ($config['port'] ?? CLICKHOUSE_PORT),
-            'user'          => self::$chDbCnf['username'] ?? ($config['username'] ?? CLICKHOUSE_USERNAME),
-            'password'      => self::$chDbCnf['password'] ?? ($config['password'] ?? CLICKHOUSE_PASSWORD),
+        $connectParams           = [
+            'host'          => $config['host'] ?? ($chDbCnf['host'] ?? CLICKHOUSE_HOST),
+            'port'          => $config['port'] ?? ($chDbCnf['port'] ?? CLICKHOUSE_PORT),
+            'user'          => $config['username'] ?? ($chDbCnf['username'] ?? CLICKHOUSE_USERNAME),
+            'password'      => $config['password'] ?? ($chDbCnf['password'] ?? CLICKHOUSE_PASSWORD),
             'dbname'        => $config['db'] ?? CLICKHOUSE_DB,
             'driverClass'   => 'FOD\DBALClickHouse\Driver',
             'wrapperClass'  => 'FOD\DBALClickHouse\Connection',
@@ -40,21 +42,20 @@ class CHBase extends Base
                 'https'                   => false
             ],
         ];
-        $this->connection = DriverManager::getConnection($connectParams, (new Configuration()));
+        self::$connection[$name] = DriverManager::getConnection($connectParams, (new Configuration()));
 
         /* "smi2/phpclickhouse"连接方式 */
         // $connectParams = [
-        //     'host'     => self::$chDbCnf['host'] ?? ($config['host'] ?? CLICKHOUSE_HOST),
-        //     'port'     => self::$chDbCnf['port'] ?? ($config['port'] ?? CLICKHOUSE_PORT),
-        //     'username' => self::$chDbCnf['username'] ?? ($config['username'] ?? CLICKHOUSE_USERNAME),
-        //     'password' => self::$chDbCnf['password'] ?? ($config['password'] ?? CLICKHOUSE_PASSWORD),
+        //     'host'     => $chDbCnf['host'] ?? ($config['host'] ?? CLICKHOUSE_HOST),
+        //     'port'     => $chDbCnf['port'] ?? ($config['port'] ?? CLICKHOUSE_PORT),
+        //     'username' => $chDbCnf['username'] ?? ($config['username'] ?? CLICKHOUSE_USERNAME),
+        //     'password' => $chDbCnf['password'] ?? ($config['password'] ?? CLICKHOUSE_PASSWORD),
         // ];
-        // $dbName        = $config['db'] ?? CLICKHOUSE_DB;
-        // self::$db      = new Client($connectParams);
-        // self::$db->database($dbName);
-        // self::$db->setConnectTimeOut(3);
+        // self::$connection[$name] = new Client($connectParams);
+        // self::$connection[$name]->database(($config['db'] ?? CLICKHOUSE_DB));
+        // self::$connection[$name]->setConnectTimeOut(3);
 
-        return $this->connection;
+        return self::$connection[$name];
     }
 
     /**

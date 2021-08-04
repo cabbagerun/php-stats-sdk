@@ -2,9 +2,9 @@
 
 namespace Jianzhi\Stats;
 
-use Jianzhi\Stats\service\Init;
-use Jianzhi\Stats\service\swoole\HttpServer;
-use Jianzhi\Stats\service\swoole\TaskServer;
+use Jianzhi\Stats\extend\Init;
+use Jianzhi\Stats\command\HttpServer;
+use Jianzhi\Stats\command\TaskServer;
 
 /**
  * 对外api访问
@@ -24,17 +24,17 @@ class Dispatch
     public function callApi($class, $action)
     {
         try {
-            $class = ucwords($class);
-            $action = ucfirst($action);
-            $classPath = __DIR__ . '/controller/' . $class . '.php';
-            $class     = '\\Jianzhi\\Stats\\controller\\' . $class;
-            if (!is_file($classPath) || !method_exists($class, $action)) {
-                return api_return(1001, '接口不存在');
+            $class      = ucwords($class);
+            $classPath  = __DIR__ . '/controller/' . $class . '.php';
+            $controller = '\\Jianzhi\\Stats\\controller\\' . $class;
+            if (!is_file($classPath) || !method_exists($controller, $action)) {
+                return json_return(CODE_FAIL, MSG_API_NOT_FOUND);
             }
-            $obj = new $class($this->request);
+            $this->request->setController($class)->setAction($action);
+            $obj = new $controller($this->request);
             return $obj->$action();
         } catch (\Throwable $e) {
-            return api_return(1001, '接口异常' . $e->getMessage());
+            return json_return(CODE_FAIL, $e->getMessage());
         }
     }
 
@@ -42,10 +42,11 @@ class Dispatch
      * 开启http服务
      * @throws \Exception
      */
-    public function startHttpServer() {
+    public function startHttpServer()
+    {
         try {
             $http = new HttpServer($this->request);
-            $http->initSet()->run();
+            $http->init()->run();
         } catch (\Throwable $e) {
             throw new \Exception($e->getMessage());
         }

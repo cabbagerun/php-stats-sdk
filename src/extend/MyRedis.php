@@ -1,6 +1,6 @@
 <?php
 
-namespace Jianzhi\Stats\service;
+namespace Jianzhi\Stats\extend;
 
 use Jianzhi\Stats\base\RedisBase;
 

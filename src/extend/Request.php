@@ -1,34 +1,37 @@
 <?php
 
-namespace Jianzhi\Stats\service;
+namespace Jianzhi\Stats\extend;
 
 class Request
 {
     /**
-     * 配置参数，如redis、swoole、clickHouse
+     * 配置参数
      * @var array
      */
     private $config = [];
 
     public function __construct(array $config = [], $remoteRequest = null)
     {
-        $this->loadFiles();
+        // 一：设置配置
         $this->setConfig($config);
+        // 二：加载配置文件
+        $this->setConstant();
+        // 三：加载配置文件
+        $this->loadFiles();
+        // 四：设置请求
         $this->setRemoteRequestParams($remoteRequest);
     }
 
     /**
-     * 加载配置文件
+     * 设置常量
      */
-    private function loadFiles()
+    private function setConstant()
     {
-        if (!defined('SDK_IS_RUN')) {
-            $extra = glob(__DIR__ . '/../extra/*.php');
-            foreach ($extra as $file) {
-                if (file_exists($file)) {
-                    require_once $file;
-                }
-            }
+        if (isset($this->config['sdk_debug']) && $this->config['sdk_debug']) {
+            !defined('SDK_DEBUG') && define('SDK_DEBUG', $this->config['sdk_debug']);
+        }
+        if (isset($this->config['sdk_log_dir']) && $this->config['sdk_log_dir']) {
+            !defined('SDK_LOG_DIR') && define('SDK_LOG_DIR', rtrim($this->config['sdk_log_dir'], '/'));
         }
     }
 
@@ -48,6 +51,19 @@ class Request
     public function setConfig(array $config = [])
     {
         $config && $this->config = $config;
+    }
+
+    /**
+     * 加载配置文件
+     */
+    private function loadFiles()
+    {
+        $extra = glob(__DIR__ . '/../common/*.php');
+        foreach ($extra as $file) {
+            if (file_exists($file)) {
+                require_once $file;
+            }
+        }
     }
 
     /**

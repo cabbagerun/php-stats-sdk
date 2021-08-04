@@ -15,18 +15,30 @@ abstract class SwooleBase extends Base
      * @param array $config
      * @return $this
      */
-    public function initSet(array $config = [])
+    public function init(array $config = [])
     {
-        $this->host   = self::$swooleHttpCnf['host'] ?? ($config['host'] ?? $this->host);
-        $this->port   = self::$swooleHttpCnf['port'] ?? ($config['port'] ?? $this->port);
+        $config = array_merge($config, $this->setOption());
+        $swooleHttpCnf = $this->swooleHttpConfig();
+        $this->host   = $config['host'] ?? ($swooleHttpCnf['host'] ?? $this->host);
+        $this->port   = $config['port'] ?? ($swooleHttpCnf['port'] ?? $this->port);
         $this->option = array_merge(
             $this->option,
-            array_merge(($config['option'] ?? []), (self::$swooleHttpCnf['option'] ?? []))
+            array_merge(($swooleHttpCnf['option'] ?? []), ($config['option'] ?? []))
         );
-        $this->serv   = $this->instance($this->host, $this->port);
+        $logDir       = pathinfo($this->option['log_file'], PATHINFO_DIRNAME);
+        if (!is_dir($logDir)) {
+            mkdir($logDir);
+        }
+        $this->serv = $this->instance($this->host, $this->port);
         $this->serv->set($this->option);
         return $this;
     }
+
+    /**
+     * 设置选线
+     * @return mixed
+     */
+    abstract public function setOption();
 
     /**
      * 自定义实例化
