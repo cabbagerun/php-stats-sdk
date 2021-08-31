@@ -5,25 +5,18 @@
 - ext-curl: *
 - ext-json: *
 
+## 安装
+
+- composer require jianzhi/php-stats-sdk
+
 ## 结构
 
 ``` bash
-├── base                    基础
-├── command                 命令行
-├── common                  公共的自定义
-├── controller              控制器
-├── extend                  扩展
-    ├── Cacheable.php       cache服务
-    ├── Init.php            Api初始化服务
-    ├── Log.php             日志
-    ├── MyRedis.php         redis服务
-    ├── Request.php         请求服务
-    ├── Response.php        响应服务
-    ├── SdkException.php    sdk异常处理
-├── model                   模型
-├── runtime                 运行时日志
-├── service                 业务逻辑
-├── validate                自动验证目录
+├── Analytics               数据采集
+├── ClickHouse              ClickHouse封装
+├── Common                  公共类
+├── Exception               异常处理
+├── Service                 服务类
 ├── Dispatch.php            入口
 ```
 
@@ -31,10 +24,6 @@
 
 ``` bash
 $config = [
-    // 调试模式
-    'sdk_debug' => false,
-    // 日志目录
-    'sdk_log_dir' => __DIR__ . '/../runtime',
     // swooleHttp服务
     'swoole_http' => [
         'host' => '127.0.0.1',
@@ -58,9 +47,26 @@ $config = [
 ];
 ```
 
+## 例子
+
+``` bash
+$config = ['swoole_http' => [
+    'host' => '127.0.0.1',
+    'port' => 8123,
+    'username' => 'default',
+    'password' => '',
+], 'ch_db' => [], 'redis' => []];
+$tick = new Dispatch($config);
+$tick->clickHouseOperator()->select(1);
+
+```
+
 ## 测试
 
 ``` bash
+#启动http服务
+php example\click_house.php
+
 #启动http服务
 php example\http.php
 
@@ -73,7 +79,3 @@ php example\api.php
 #启动消费任务
 php example\task.php
 ```
-
-## 安装
-
-- composer require jianzhi/php-stats-sdk
